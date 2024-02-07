@@ -1,11 +1,19 @@
 const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-
+const helmet = require("helmet");
+const app = express();
 require("dotenv").config();
 
-const app = express();
+//custom middleware
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const logger = require("./middleware/winston");
+const verifyToken = require("./middleware/authentication");
+const session = require("express-session");
 
+//Routes
+const authRoute = require("./routes/auth.route");
+//Middleware
+app.use(helmet());
 app.use(cors());
 app.use(bodyParser.json());
 app.use(
@@ -14,11 +22,28 @@ app.use(
     methods: ["GET", "POST", "PUT"],
   })
 );
+app.use(
+  session({
+    secret: "1234",
+    resave: false, // Forces the session to be saved back to the session store, even if the session was never modified during the request
+    saveUninitialized: true, // Forces a session that is "uninitialized" to be saved to the store. A session is uninitialized when it is new but not modified
+    cookie: {
+      secure: false,
+      httpOnly: true,
+    },
+  })
+);
+//Routes registration
+app.use("/auth", authRoute);
+app.use(verifyToken);
+//Error handler function
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send("Something went wrong!");
 });
+
+//Start server
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
