@@ -1,5 +1,6 @@
 const express = require("express");
 const helmet = require("helmet");
+const mongoose = require("mongoose");
 const app = express();
 require("dotenv").config();
 
@@ -7,11 +8,20 @@ require("dotenv").config();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const logger = require("./middleware/winston");
-const verifyToken = require("./middleware/authentication");
 const session = require("express-session");
+const verifyTokenMiddleware = require("./middleware/authentication");
 
 //Routes
 const authRoute = require("./routes/auth.route");
+const eventRoute = require("./routes/event.route");
+
+try {
+  mongoose.connect("mongodb://0.0.0.0:27017").then(() => {
+    logger.info("Connected to MongoDB");
+  });
+} catch (error) {
+  logger.error("Error connecting to MongoDB" + error);
+}
 //Middleware
 app.use(helmet());
 app.use(cors());
@@ -33,13 +43,16 @@ app.use(
     },
   })
 );
-//Routes registration
+
 app.use("/auth", authRoute);
-app.use(verifyToken);
+app.use(verifyTokenMiddleware);
+
+//Routes registration
+app.use("/event", eventRoute);
 //Error handler function
 
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  //console.error(err.stack);
   res.status(500).send("Something went wrong!");
 });
 

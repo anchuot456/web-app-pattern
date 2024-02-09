@@ -1,22 +1,50 @@
+const express = require("express");
 const jwt = require("jsonwebtoken");
 const { unauthorized } = require("../constants/statusCodes");
 const logger = require("./winston");
-const serectKey = process.env.JWT_SERECT_KEY;
+const { verifyToken, deleteToken } = require("../services/token.service");
+const { tokenTypes } = require("../config/tokens");
+const { error } = require("winston");
+const { refreshAuth } = require("../services/auth.service");
 
-const verifyToken = (req, res, next) => {
-  const token = req.headers("authorization"); // format: 'Bearer <token>'
-  if (!token) {
+const verifyTokenMiddleware = async (req, res, next) => {
+  const authorization = req.headers["authorization"]; // format: 'Bearer <token>'
+  if (!authorization) {
     return res.status(unauthorized).send("Access denied. No provided token");
   }
+  const accessToken = authorization.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, serectKey);
-    req.user = decoded;
+    const tokenDoc = await verifyToken(accessToken, tokenTypes.ACCESS);
+    if (!tokenDoc) {
+      return res.status(unauthorized).send({ message: "Invalid Token" });
+    }
+    req.user = tokenDoc.user;
     next();
-  } catch (err) {
-    logger.error(err);
-    return res.status(400).send("Invalid Token");
+  } catch (error) {
+    logger.error(error);
+
+    //Refresh new access token
+    if (error.name === "TokenExpiredError") {
+      await deleteToken(accessToken, tokenTypes.ACCESS)
+        .then(() => {
+          logger.info("deleted old access token");
+        })
+        .catch((err) => {
+          console.error("query error", err);
+          logger.error(err);
+        });
+      await refreshAuth(req, res)
+        .then(() => {
+          logger.info("refreshed new access token");
+          next();
+        })
+        .catch((err) => {
+          logger.error(err);
+        });
+    }
+    //return res.status(unauthorized).send({ message: "Invalid Token", error });
   }
 };
 
-module.exports = verifyToken;
+module.exports = verifyTokenMiddleware;

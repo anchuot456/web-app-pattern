@@ -1,30 +1,12 @@
-const { Sequelize } = require("sequelize");
+const mongoose = require("mongoose");
+const logger = require("../middleware/winston");
 
-require("dotenv").config();
-
-const username = process.env.DBUser;
-const password = process.env.DBPassword;
-
-console.log("user & password", username, password);
-
-const sequelize = new Sequelize("webapppattern", username, password, {
-  host: "localhost",
-  dialect: "mysql",
-  pool: {
-    max: 10,
-    min: 0,
-    acquire: 30000,
-    idle: 10000,
-  },
-});
-
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log("CONNECTION ESTABLISHED SUCCESSFULLY");
+mongoose
+  .connect("mongodb://localhost:27017/webapppattern", {
+    useCreateIndex: true,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   })
-  .catch((err) => {
-    console.error("UNABLE TO CONNECT DATABASE", err);
+  .then(() => {
+    logger.info("Connected to MongoDB");
   });
-
-module.exports = sequelize;
