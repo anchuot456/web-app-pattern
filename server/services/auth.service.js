@@ -90,6 +90,7 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
+    console.log(req.body, req.headers);
     const accessToken = req.headers.authorization.split(" ")[1];
     await deleteToken(accessToken, tokenTypes.ACCESS);
     logger.info("deleted  access token");

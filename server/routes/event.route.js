@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const eventService = require("../services/event.service");
 
-router.get("/", (req, res) => {
-  res.status(200).send({ message: "get event work fine" });
-});
+router.get("/", eventService.getEvents);
+router.post("/create", eventService.createEvent);
 
 module.exports = router;

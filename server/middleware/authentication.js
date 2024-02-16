@@ -16,6 +16,7 @@ const verifyTokenMiddleware = async (req, res, next) => {
 
   try {
     const tokenDoc = await verifyToken(accessToken, tokenTypes.ACCESS);
+    console.log(tokenDoc);
     if (!tokenDoc) {
       return res.status(unauthorized).send({ message: "Invalid Token" });
     }
@@ -37,7 +38,6 @@ const verifyTokenMiddleware = async (req, res, next) => {
       await refreshAuth(req, res)
         .then(() => {
           logger.info("refreshed new access token");
-          next();
         })
         .catch((err) => {
           logger.error(err);

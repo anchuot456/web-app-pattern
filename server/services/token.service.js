@@ -56,6 +56,7 @@ const verifyToken = async (token, type) => {
     if (!tokenDoc) {
       throw new Error("Token not found");
     }
+    console.log(tokenDoc);
     return tokenDoc;
   } catch (error) {
     console.log("invalid token");
