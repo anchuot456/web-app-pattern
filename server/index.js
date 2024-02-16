@@ -15,6 +15,7 @@ const verifyTokenMiddleware = require("./middleware/authentication");
 const authRoute = require("./routes/auth.route");
 const eventRoute = require("./routes/event.route");
 const userRoute = require("./routes/user.route");
+const taskRoute = require("./routes/task.route");
 
 try {
   mongoose.connect("mongodb://0.0.0.0:27017").then(() => {
@@ -51,6 +52,7 @@ app.use(verifyTokenMiddleware);
 //Routes registration
 app.use("/event", eventRoute);
 app.use("/user", userRoute);
+app.use("/task", taskRoute);
 //Error handler function
 
 app.use((err, req, res, next) => {

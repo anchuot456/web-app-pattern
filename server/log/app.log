@@ -223,3 +223,14 @@
 {"level":"info","message":"deleted old access token","timestamp":"2024-02-16T12:09:12.839Z"}
 {"level":"info","message":"refreshed new access token","timestamp":"2024-02-16T12:09:12.874Z"}
 {"level":"info","message":"Connected to MongoDB","timestamp":"2024-02-16T14:08:12.857Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2024-02-16T14:08:23.684Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2024-02-16T14:21:13.755Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2024-02-16T14:21:56.999Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2024-02-16T14:22:08.652Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2024-02-16T14:29:00.990Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2024-02-16T14:39:23.403Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2024-02-16T15:14:55.675Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2024-02-16T15:15:30.915Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2024-02-16T15:20:05.361Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2024-02-16T15:24:20.206Z"}
+{"level":"error","timestamp":"2024-02-16T15:24:35.483Z"}
