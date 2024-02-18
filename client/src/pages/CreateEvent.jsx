@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const CreateEvent = ()=>{
     const [name,setName] = useState('');
@@ -10,7 +11,9 @@ const CreateEvent = ()=>{
     const [responsible,setResponsible] = useState('');
     const [participant,setParticipant] = useState('');
 
-    useEffect(()=>{
+    const navigate = useNavigate();
+
+    const getUser = ()=>{
         const accessToken = localStorage.getItem("accessToken");
         const refreshToken = localStorage.getItem("refreshToken");
         const user_id = localStorage.getItem("user_id");
@@ -24,14 +27,58 @@ const CreateEvent = ()=>{
             }
         }).then((response)=>{
             console.log(response);
-            setResponsible(response.data.name);
+            if(response.data.accessToken){
+                console.log(response.data.accessToken);
+                localStorage.setItem("accessToken",response.data.accessToken);
+                getUser();
+            }else{
+                setResponsible(response.data.name);
+            }
         }).catch((error)=>{
             console.error(error);
+            navigate("/");
         });
+    }
+
+    useEffect(()=>{
+        getUser();
     },[]);
 
     const handleSubmit = (e)=>{
-
+        e.preventDefault();
+        const accessToken = localStorage.getItem("accessToken");
+        const refreshToken = localStorage.getItem("refreshToken");
+        const user_id = localStorage.getItem("user_id");
+        const data = {
+            name,
+            date,
+            description,
+            location,
+            responsible:user_id,
+            participant
+        }
+        axios.post("http://127.0.0.1:3001/event/create",data,{
+            headers:{
+                "Authorization": "Bearer "+ accessToken,
+                "refreshToken": "Bearer "+refreshToken
+            },
+            params:{
+                user_id,
+            }
+        }).then((response)=>{
+            console.log(response);
+            if(response.data.accessToken){
+                console.log(response.data.accessToken);
+                localStorage.setItem("accessToken",response.data.accessToken);
+                handleSubmit();
+            }else{
+                console.log(response.data);
+                navigate("/home");
+            }
+        }).catch((error)=>{
+            console.error(error);
+            navigate("/");
+        });
     }
 
     return(
@@ -54,7 +101,7 @@ const CreateEvent = ()=>{
 
                         <div className="mb-4">
                             <input
-                                type="text"
+                                type="date"
                                 id="Date"
                                 placeholder="date"
                                 value={date} onChange={(e) => setDate(e.target.value)}

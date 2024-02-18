@@ -17,11 +17,11 @@ const taskSchema = mongoose.Schema(
       type: Date,
     },
     event: {
-      type: ObjectId,
+      type: Object,
       require: true,
     },
     assignee: {
-      type: ObjectId,
+      type: Object,
       require: true,
     },
   },

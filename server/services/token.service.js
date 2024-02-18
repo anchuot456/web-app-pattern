@@ -51,12 +51,10 @@ const saveToken = async (token, userID, expire, type) => {
 const verifyToken = async (token, type) => {
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    console.log(payload);
     const tokenDoc = await Token.findOne({ token, type, user: payload.sub });
     if (!tokenDoc) {
       throw new Error("Token not found");
     }
-    console.log(tokenDoc);
     return tokenDoc;
   } catch (error) {
     console.log("invalid token");

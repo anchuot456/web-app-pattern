@@ -16,7 +16,6 @@ const verifyTokenMiddleware = async (req, res, next) => {
 
   try {
     const tokenDoc = await verifyToken(accessToken, tokenTypes.ACCESS);
-    console.log(tokenDoc);
     if (!tokenDoc) {
       return res.status(unauthorized).send({ message: "Invalid Token" });
     }

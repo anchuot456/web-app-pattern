@@ -20,12 +20,12 @@ const eventSchema = mongoose.Schema(
       type: String,
     },
     responsible: {
-      type: ObjectId,
+      type: Object,
       require: true,
     },
     participant: [
       {
-        type: ObjectId,
+        type: Object,
         ref: userModel,
       },
     ],

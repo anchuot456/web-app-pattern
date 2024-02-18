@@ -13,6 +13,17 @@ const getEvents = async (req, res) => {
     });
 };
 
+const getEventById = async (req, res) => {
+  const event_id = req.query.event_id;
+  const event = await Event.findById(event_id)
+    .then((doc) => {
+      res.status(200).send(doc);
+    })
+    .catch((error) => {
+      res.status(queryError).send(error);
+    });
+};
+
 const createEvent = async (req, res) => {
   const { name, date, location, description, responsible, participant } =
     req.body;
@@ -41,4 +52,16 @@ const createEvent = async (req, res) => {
   res.status(201).send({ event: newEvent });
 };
 
-module.exports = { getEvents, createEvent };
+const deleteEventById = async (req, res) => {
+  const event_id = req.body.event_id;
+  console.log(req.body);
+  const deletedEvent = await Event.findByIdAndDelete(event_id).catch(
+    (error) => {
+      res.status(queryError).send(error);
+    }
+  );
+  console.log("deleted", deletedEvent);
+  res.status(201).send(deletedEvent);
+};
+
+module.exports = { getEvents, getEventById, createEvent, deleteEventById };

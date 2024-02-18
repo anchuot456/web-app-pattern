@@ -17,6 +17,7 @@ const {
 } = require("./token.service");
 const { tokenTypes } = require("../config/tokens");
 const logger = require("../middleware/winston");
+const { Types } = require("mongoose");
 
 require("dotenv");
 
@@ -135,4 +136,45 @@ const refreshAuth = async (req, res) => {
   }
 };
 
-module.exports = { register, login, logout, refreshAuth };
+const changePassword = async (req, res) => {
+  try {
+    console.log(req.body, req.headers);
+    const { user_id, name, email, password } = req.body;
+    const accessToken = req.headers.authorization.split(" ")[1];
+    const tokenDoc = await verifyToken(accessToken, tokenTypes.ACCESS);
+    const user = await User.findById(user_id).catch((error) => {
+      console.log("invalid user_id", error);
+      res.status(404).send({ message: "invalid user_id" });
+    });
+    console.log("user found :", user);
+    console.log("tokenDoc.user", tokenDoc.user);
+    console.log("user._id", user._id);
+    console.log(tokenDoc.user.equals(user._id));
+    const hashedPassword = await bcrypt.hash(password, 10);
+    if (tokenDoc.user.equals(user._id)) {
+      console.log("true");
+      const newUserData = {
+        name,
+        email,
+        password: hashedPassword,
+      };
+      const newUserDoc = await User.findByIdAndUpdate(user_id, newUserData)
+        .then((doc) => {
+          console.log(doc);
+          logger.info("change new info to user " + user_id);
+          res.status(201).send({ user: doc });
+        })
+        .catch((error) => {
+          console.error(error);
+          log.error("error while change new info to user " + user_id);
+          res.status(queryError).send(error);
+        });
+
+      res.status(201).send(newUserDoc);
+    }
+  } catch (error) {
+    return res.status(unauthorized).send({ message: "unthorization", error });
+  }
+};
+
+module.exports = { register, login, logout, refreshAuth, changePassword };
